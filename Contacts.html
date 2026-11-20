@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contacts · ThriftNFit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Lahat ng style ng page na ito ay nandito na, hindi na kailangan ng ibang CSS file -->
+  <style>
+    body, .nav, .nav__link,
+    button, input, select, textarea {
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 35%,
+        var(--bg-glow, #6b4c35) 0%,
+        var(--bg, #3f2d20) 55%,
+        var(--bg-edge, #2f2218) 100%
+      ) fixed;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream, #f5f0e8);
+      font-size: 40px;
+      line-height: 1;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.7; }
+
+    /* Kapag may logo image na, alisin ang kahon at text */
+    .nav__logo.has-img { padding: 0; background: none; }
+    .nav__logo #logoImg { display: block; height: 48px; width: auto; }
+
+    .contact-page {
+      display: flex;
+      justify-content: center;
+      padding: clamp(120px, 20vh, 190px) 20px 60px;
+    }
+
+    /* ---------- CARD (may border, nasa loob ang mga fill up) ---------- */
+    .contact-card {
+      width: 100%;
+      max-width: 476px;
+      padding: 20px 22px 24px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e1e1e;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
+    .field label {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .field .count { font-size: 12px; font-weight: 500; color: #8a8a8a; text-transform: none; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 11px 16px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e1e1e;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #b3b3b3; font-weight: 500; }
+    .field textarea { min-height: 130px; resize: vertical; }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .input-group:focus-within { outline: 2px solid #2c2c2c; outline-offset: 1px; }
+
+    .input-group {
+      display: flex;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .field .input-group select,
+    .field .input-group input { border: 0; border-radius: 0; }
+    .field .input-group select {
+      width: auto;
+      flex: none;
+      padding: 11px 10px 11px 14px;
+      background-color: #f3f3f3;
+      border-right: 1px solid #d9d9d9;
+      cursor: pointer;
+    }
+    .field .input-group input { flex: 1; min-width: 0; }
+    .field .input-group select:focus,
+    .field .input-group input:focus { outline: none; }
+
+    .field .err { font-size: 12px; font-weight: 500; color: #b3261e; }
+    .field.has-error input,
+    .field.has-error textarea,
+    .field.has-error .input-group { border-color: #b3261e; }
+
+    /* Submit na may border */
+    .submit-btn {
+      width: 100%;
+      margin-top: 6px;
+      padding: 12px;
+      border: 2px solid #2c2c2c;
+      border-radius: 8px;
+      background: #fff;
+      color: #2c2c2c;
+      font-size: 16px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .submit-btn:hover,
+    .submit-btn:focus-visible { background: #2c2c2c; color: #fff; outline: none; }
+
+    .sent-msg {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      background: #eaf5ea;
+      color: #2e7d32;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="shop.html" class="back-btn" id="backBtn" aria-label="Back">←</a>
+    </nav>
+
+    <!-- Logo: ilagay ang exported logo sa assets/logo.png. Kung wala pa, text muna ang lalabas. -->
+    <a href="index.html" class="nav__logo" id="logoLink" aria-label="ThriftNFit">
+      <img id="logoImg" src="assets/logo.png" alt="ThriftNFit" height="48" hidden>
+      <span id="logoText">ThriftNFit</span>
+    </a>
+
+    <div class="nav__right"></div>
+  </header>
+
+  <main class="contact-page">
+    <form class="contact-card" id="contactForm" novalidate>
+
+      <div class="field" id="f-email">
+        <label for="email">Email:</label>
+        <input type="email" id="email" placeholder="Example@gmail.com" autocomplete="email">
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-contact">
+        <label for="contact">Contact</label>
+        <div class="input-group">
+          <select id="dial" aria-label="Country code"></select>
+          <input type="tel" id="contact" placeholder="Enter your contact number" inputmode="tel" autocomplete="tel-national">
+        </div>
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-issue">
+        <label for="issue">Issue: <span class="count" id="count">0 / 500</span></label>
+        <textarea id="issue" maxlength="500" placeholder="Tell us what happened or what you need help with"></textarea>
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <button type="submit" class="submit-btn">Submit</button>
+      <p class="sent-msg" id="sentMsg" role="status" hidden>Thank you! We received your message and will get back to you soon.</p>
+    </form>
+  </main>
+
+  <script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+
+    // Logo image (kung may assets/logo.png)
+    (function () {
+      var img = $("logoImg");
+      function show() {
+        img.hidden = false;
+        $("logoText").hidden = true;
+        $("logoLink").classList.add("has-img");
+      }
+      if (img.complete && img.naturalWidth > 0) show();
+      else img.addEventListener("load", show);
+    })();
+
+    // Back arrow: bumabalik sa pinanggalingan
+    $("backBtn").addEventListener("click", function (e) {
+      if (document.referrer && history.length > 1) {
+        e.preventDefault();
+        history.back();
+      }
+    });
+
+    // [ISO, dial code] para sa mga customer sa ibang bansa
+    var DIALS = [
+      ["PH", "+63"], ["US", "+1"], ["CA", "+1"], ["GB", "+44"], ["AU", "+61"], ["NZ", "+64"], ["SG", "+65"],
+      ["HK", "+852"], ["JP", "+81"], ["KR", "+82"], ["CN", "+86"], ["TW", "+886"], ["IN", "+91"], ["AE", "+971"],
+      ["SA", "+966"], ["QA", "+974"], ["KW", "+965"], ["DE", "+49"], ["FR", "+33"], ["ES", "+34"], ["IT", "+39"],
+      ["NL", "+31"], ["IE", "+353"], ["CH", "+41"], ["SE", "+46"], ["NO", "+47"], ["MY", "+60"], ["TH", "+66"],
+      ["VN", "+84"], ["ID", "+62"], ["MX", "+52"], ["BR", "+55"]
+    ];
+    var dial = $("dial");
+    DIALS.forEach(function (d, i) {
+      var o = document.createElement("option");
+      o.value = String(i);
+      o.textContent = d[0] + " " + d[1];
+      dial.appendChild(o);
+    });
+
+    function setError(id, text) {
+      var box = $("f-" + id);
+      box.classList.add("has-error");
+      box.querySelector(".err").textContent = text;
+    }
+    function clearError(id) {
+      var box = $("f-" + id);
+      box.classList.remove("has-error");
+      box.querySelector(".err").textContent = "";
+    }
+    ["email", "contact", "issue"].forEach(function (id) {
+      $(id).addEventListener("input", function () { clearError(id); $("sentMsg").hidden = true; });
+    });
+    dial.addEventListener("change", function () { clearError("contact"); });
+
+    // Bilang ng letra
+    function updateCount() { $("count").textContent = $("issue").value.length + " / 500"; }
+    $("issue").addEventListener("input", updateCount);
+
+    // Kunin ang email at number mula sa shipping information kung naka-save na
+    try {
+      var ship = JSON.parse(localStorage.getItem("tnf-shipping"));
+      if (ship) {
+        if (ship.email) $("email").value = ship.email;
+        if (ship.phoneLocal) $("contact").value = ship.phoneLocal;
+        if (ship.phone) {
+          for (var i = 0; i < DIALS.length; i++) {
+            if (ship.phone.indexOf(DIALS[i][1] + " ") === 0) { dial.value = String(i); break; }
+          }
+        }
+      }
+    } catch (e) { /* ignore */ }
+
+    // ---------- submit ----------
+    $("contactForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var ok = true, firstBad = null;
+      function bad(id, msg) { setError(id, msg); ok = false; if (!firstBad) firstBad = $(id); }
+
+      var email = $("email").value.trim();
+      var contact = $("contact").value.replace(/[^\d]/g, "").replace(/^0+/, "");
+      var issue = $("issue").value.trim();
+
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) bad("email", "Please enter a valid email address.");
+      if (contact.length < 6 || contact.length > 13) bad("contact", "Please enter a valid contact number.");
+      if (issue.length < 10) bad("issue", "Please describe your issue (at least 10 characters).");
+
+      if (!ok) { firstBad.focus(); return; }
+
+      var entry = {
+        email: email,
+        contact: DIALS[Number(dial.value)][1] + " " + contact,
+        issue: issue,
+        date: new Date().toISOString()
+      };
+      try {
+        var list = JSON.parse(localStorage.getItem("tnf-contacts")) || [];
+        list.push(entry);
+        localStorage.setItem("tnf-contacts", JSON.stringify(list));
+      } catch (err) { /* ignore */ }
+
+      $("issue").value = "";
+      updateCount();
+      $("sentMsg").hidden = false;
+    });
+  })();
+  </script>
+</body>
+</html>

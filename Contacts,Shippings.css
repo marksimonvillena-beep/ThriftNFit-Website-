@@ -1,0 +1,205 @@
+/* Siguraduhing walang extra margin/padding ang body at naka-set ang background */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #f9f9f9; /* Light gray background para lumutang ang white card */
+  color: #242424;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header / Navbar alignment */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.nav__logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: none;
+  color: #111111;
+}
+
+.back-btn {
+  text-decoration: none;
+  font-size: 20px;
+  color: #111111;
+}
+
+/* Container na maglalagay sa form sa pinakagitna */
+.form-page {
+  flex: 1;
+  display: flex !important;
+  justify-content: center !important; /* Gitna pahiga (horizontal) */
+  align-items: center !important;     /* Gitna patayo (vertical) */
+  width: 100% !important;
+  padding: 40px 20px !important;
+  box-sizing: border-box !important;
+}
+
+/* Ang mismong Form Box na may Border */
+.form-card {
+  width: 100% !important;
+  max-width: 550px !important;
+  margin: 0 auto !important; /* Backup centering */
+  padding: 36px 32px !important;
+  background: #ffffff !important;
+  color: #242424 !important;
+  border: 1.5px solid #d1d1d1 !important; /* Mas malinaw na border */
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04); /* Banayad na shadow */
+  box-sizing: border-box !important;
+}
+
+/* Headings sa loob ng form */
+.form-heading {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.form-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px 0;
+  color: #111111;
+}
+
+.form-description {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+}
+
+/* Sections (Personal Info & Delivery Address) */
+.form-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eeeeee;
+  color: #111111;
+}
+
+/* Input Fields at Labels */
+.field {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 6px;
+  color: #333333;
+}
+
+.form-card input[type="text"],
+.form-card input[type="email"],
+.form-card input[type="tel"],
+.form-card select,
+.form-card textarea {
+  width: 100%;
+  padding: 11px 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #242424;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease;
+}
+
+.form-card input:focus,
+.form-card textarea:focus {
+  outline: none;
+  border-color: #111111;
+}
+
+.form-card input[readonly] {
+  background-color: #f4f4f4;
+  color: #666666;
+  cursor: not-allowed;
+}
+
+.form-card textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Magkatabing inputs (State/Province at City) */
+.field-row {
+  display: flex;
+  gap: 16px;
+}
+
+.field-row .field {
+  flex: 1;
+}
+
+/* Terms Checkbox */
+.terms {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: #555555;
+  margin-bottom: 24px;
+  cursor: pointer;
+}
+
+.terms input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.terms a {
+  color: #111111;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* Submit Button */
+.form-btn {
+  width: 100%;
+  padding: 14px;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: #111111;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.form-btn:hover {
+  background-color: #333333;
+}
+
+/* Responsive para sa mobile */
+@media (max-width: 500px) {
+  .field-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  .form-card {
+    padding: 24px 20px !important;
+  }
+}

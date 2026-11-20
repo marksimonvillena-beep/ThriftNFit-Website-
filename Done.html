@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Done · ThriftNFit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Oswald:wght@400&family=Playfair+Display:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream);
+      font-size: 40px;
+      line-height: 1;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.7; }
+
+    .done {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 120px 24px 60px;
+      text-align: center;
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 40%,
+        var(--bg-glow) 0%,
+        var(--bg) 55%,
+        var(--bg-edge) 100%
+      );
+    }
+
+    .done__check {
+      width: clamp(150px, 20vw, 255px);
+      height: auto;
+      fill: none;
+      stroke: #fff;
+      stroke-width: 5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .done__check polyline {
+      stroke-dasharray: 260;
+      stroke-dashoffset: 260;
+      animation: draw 0.7s 0.15s ease forwards;
+    }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    .done__title {
+      margin-top: clamp(24px, 6vh, 64px);
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: clamp(28px, 3vw, 36px);
+      font-weight: 400;
+      letter-spacing: 0.02em;
+      color: #fff;
+    }
+
+    .done__thanks {
+      margin-top: 14px;
+      font-family: "Playfair Display", Georgia, serif;
+      font-size: clamp(15px, 1.6vw, 18px);
+      font-weight: 800;
+      color: var(--cream);
+    }
+    .done__thanks a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    .done__thanks a:hover,
+    .done__thanks a:focus-visible { border-color: var(--accent); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .done__check polyline { stroke-dashoffset: 0; animation: none; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="shop.html" class="back-btn" aria-label="Back to shop">←</a>
+    </nav>
+
+    <a href="index.html" class="nav__logo">ThriftNFit</a>
+
+    <div class="nav__right"></div>
+  </header>
+
+  <main class="done">
+    <svg class="done__check" viewBox="0 0 150 130" role="img" aria-label="Order done">
+      <polyline points="6,52 58,120 144,8"></polyline>
+    </svg>
+
+    <h1 class="done__title">DONE</h1>
+
+    <p class="done__thanks">
+      Thank you for buying <a href="shop.html">check for more!</a>
+    </p>
+  </main>
+
+</body>
+</html>

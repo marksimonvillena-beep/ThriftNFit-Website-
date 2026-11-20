@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ThriftNFit Lifestyle</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Ayos para sa settings menu (Contacts + Shipping information) */
+    .settings { position: relative; }
+    .menu { z-index: 1000; }
+    .menu[hidden] { display: none !important; }
+    .menu a.menu__row {
+      display: flex;
+      box-sizing: border-box;
+      width: 100%;
+      text-decoration: none;
+    }
+  </style>
+  <style>
+    .search-results {
+      position: fixed; top: 104px; left: 4%; right: 4%; z-index: 29;
+      max-width: 760px; max-height: calc(100vh - 130px); overflow-y: auto;
+      background: var(--panel, #2b1f16); border: 1px solid var(--line, rgba(255,255,255,.2));
+      border-radius: 10px; box-shadow: 0 12px 32px rgba(0,0,0,.45);
+    }
+    .search-results a, .search-results p {
+      display: flex; align-items: center; gap: 14px; padding: 10px 14px;
+      color: var(--text, #fff); text-decoration: none; font-size: 15px;
+    }
+    .search-results a + a { border-top: 1px solid var(--line, rgba(255,255,255,.12)); }
+    .search-results a:hover, .search-results a:focus-visible, .search-results a.active { background: rgba(255,255,255,.1); outline: none; }
+    .search-results img { width: 52px; height: 52px; object-fit: contain; border-radius: 6px; background: rgba(255,255,255,.06); }
+    .search-results .sr-name { flex: 1; font-weight: 600; }
+    .search-results .sr-price { color: var(--accent, #d9b88f); font-weight: 600; }
+    .search-results p { color: #ccc; }
+    #searchInput::-webkit-search-cancel-button { display: none; }
+  </style>
+</head>
+<body id="top">
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="shop.html" class="nav__link">SHOP</a>
+      <a href="#about" class="nav__link">ABOUT US</a>
+
+      <a href="LoginForm.html" class="icon-btn" aria-label="Account" title="Account">
+        <svg viewBox="0 0 24 24" width="22" height="22"
+          fill="none" stroke="currentColor" stroke-width="1.6">
+          <circle cx="12" cy="12" r="9.5"/>
+          <circle cx="12" cy="9.5" r="3.2"/>
+          <path d="M5.8 18.4c1.5-2.4 3.7-3.6 6.2-3.6s4.7 1.2 6.2 3.6"/>
+        </svg>
+      </a>
+    </nav>
+
+    <a href="#top" class="nav__logo">ThriftNFit</a>
+
+    <div class="nav__right">
+
+      <button class="icon-btn" id="searchBtn"
+        aria-label="Open search" title="Search">
+        <svg viewBox="0 0 24 24" width="21" height="21"
+          fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="6.5"/>
+          <path d="M16 16l4.5 4.5"/>
+        </svg>
+      </button>
+
+      <button class="icon-btn" id="cartBtn"
+        aria-label="Open cart" title="Cart">
+        <svg viewBox="0 0 24 24" width="26" height="26"
+          fill="none" stroke="currentColor" stroke-width="1.8"
+          stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4h3l2.4 11h11l2-8H6"/>
+          <circle cx="9" cy="19.5" r="1.4"/>
+          <circle cx="17" cy="19.5" r="1.4"/>
+        </svg>
+      </button>
+
+      <div class="settings">
+        <button class="icon-btn" id="settingsBtn"
+          aria-label="Settings" aria-expanded="false" title="Settings">
+          <svg viewBox="0 0 24 24" width="23" height="23"
+            fill="none" stroke="currentColor" stroke-width="1.7"
+            stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+          </svg>
+        </button>
+
+        <div class="menu" id="settingsMenu" hidden>
+          <a class="menu__row menu__btn" href="contacts.html">Contacts</a>
+          <a class="menu__row menu__btn" href="shipping.html">Shipping information</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <form class="search-bar" id="searchBar" hidden>
+    <input type="search" id="searchInput"
+      placeholder="Search thrifted finds..."
+      aria-label="Search thrifted finds">
+    <button type="submit" class="search-submit">Search</button>
+    <button type="button" class="icon-btn" id="searchClose"
+      aria-label="Close search">✕</button>
+  </form>
+
+  <div class="search-results" id="searchResults" role="listbox" aria-label="Search results" hidden></div>
+
+  <main>
+    <section class="hero" id="shop">
+      <div class="hero__content">
+        <h1 class="hero__title">ThriftNFit</h1>
+        <div class="hero__rule"></div>
+        <p class="hero__sub">LIFESTYLE</p>
+      </div>
+    </section>
+
+    <section class="section section--about" id="about">
+      <h2 class="section__title">About Us</h2>
+      <p class="section__description">
+        ThriftNFit is a thrifted-fashion lifestyle brand. We give
+        pre-loved pieces a second life, so you can build a wardrobe
+        that fits your style and your budget.
+      </p>
+    </section>
+  </main>
+
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="drawer" id="cartDrawer"
+    aria-label="Shopping cart" aria-hidden="true">
+    <div class="drawer__head">
+      <h2>Your Cart</h2>
+      <button class="icon-btn" id="cartClose"
+        aria-label="Close cart">✕</button>
+    </div>
+
+    <div class="drawer__content">
+      <p class="empty-cart-icon">🛍</p>
+      <h3>Your cart is empty</h3>
+      <p class="drawer__note">
+        Our thrifted finds will appear here when products are added.
+      </p>
+      <button class="continue-btn" id="continueShopping">
+        Continue browsing
+      </button>
+    </div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  // Hindi mag-e-error ang script kahit may nawawalang element sa HTML
+  const on = (id, type, fn) => { const el = $(id); if (el) el.addEventListener(type, fn); };
+  const searchBar = $("searchBar");
+  const searchInput = $("searchInput");
+  const settingsBtn = $("settingsBtn");
+  const settingsMenu = $("settingsMenu");
+  const cartDrawer = $("cartDrawer");
+  const overlay = $("overlay");
+  const toastElement = $("toast");
+
+  let toastTimer;
+
+  // SETTINGS MENU (Contacts + Shipping information)
+  if (settingsBtn && settingsMenu) settingsBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+
+    const opening = settingsMenu.hidden;
+    settingsMenu.hidden = !opening;
+
+    settingsBtn.setAttribute("aria-expanded", String(opening));
+  });
+
+  // Isara ang menu kapag nag-click sa labas
+  document.addEventListener("click", (event) => {
+    if (settingsMenu && settingsBtn && !settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
+      settingsMenu.hidden = true;
+      settingsBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+
+  // SAFE LOCAL STORAGE
+  function getSavedTheme() {
+    try {
+      return localStorage.getItem("tnf-theme") || "dark";
+    } catch {
+      return "dark";
+    }
+  }
+
+  // TOAST MESSAGE
+  function showToast(message) {
+    toastElement.textContent = message;
+    toastElement.classList.add("show");
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(() => {
+      toastElement.classList.remove("show");
+    }, 2500);
+  }
+
+  // ---- PRODUCTS (para sa search) ----
+  const PRODUCTS = [
+    { name: "“Gray Carhartt T-Shirt”",   price: 200, img: "gray-carhartt.png",   page: "tshirt1.html" },
+    { name: "“New York City T-Shirt”",   price: 150, img: "new-york-city.png",   page: "tshirt2.html" },
+    { name: "“Liberty Striped T-Shirt”", price: 100, img: "liberty-striped.png", page: "tshirt3.html" },
+    { name: "“Doormats Only Hoodie”",    price: 400, img: "doormats-only.png",   page: "hoodie1.html" },
+    { name: "“In God We Trust Hoodie”",  price: 400, img: "in-god-we-trust.png", page: "hoodie2.html" }
+  ];
+
+  // ---- SEARCH MATCHING: "gray carhartt t shirt" = "Gray Carhartt T-Shirt" ----
+  const norm = (s) => String(s).toLowerCase()
+    .replace(/[“”"'’.,]/g, " ")
+    .replace(/t[\s-]*shirts?\b/g, "tshirt")
+    .replace(/hoodies?\b/g, "hoodie")
+    .replace(/[^a-z0-9]+/g, " ").trim();
+  const matches = (p, query) => {
+    const words = norm(query).split(" ").filter(Boolean);
+    const hay = norm(p.name);
+    return words.every((w) => hay.includes(w));
+  };
+
+  const results = $("searchResults");
+  let found = [];
+  let activeIdx = -1;
+
+  function setActive(i) {
+    const links = results.querySelectorAll("a");
+    links.forEach((a, n) => a.classList.toggle("active", n === i));
+    activeIdx = i;
+  }
+
+  function renderResults() {
+    const q = searchInput.value.trim();
+    activeIdx = -1;
+    if (!q) { results.hidden = true; results.innerHTML = ""; found = []; return; }
+    found = PRODUCTS.filter((p) => matches(p, q));
+    results.innerHTML = found.length
+      ? found.map((p) => `<a href="${p.page}">
+          <img src="assets/${p.img}" alt="" onerror="this.style.visibility='hidden'">
+          <span class="sr-name">${p.name}</span>
+          <span class="sr-price">₱${p.price}</span></a>`).join("")
+      : "<p>No products found.</p>";
+    results.hidden = false;
+  }
+
+  function openSearch() {
+    searchBar.hidden = false;
+    searchInput.focus();
+  }
+  function closeSearch() {
+    searchBar.hidden = true;
+    searchInput.value = "";
+    results.hidden = true;
+    results.innerHTML = "";
+    found = [];
+  }
+
+  // SEARCH BUTTON
+  on("searchBtn", "click", () => { if (searchBar.hidden) openSearch(); else closeSearch(); });
+
+  // X BUTTON
+  on("searchClose", "click", closeSearch);
+
+  // Lalabas agad ang resulta habang nagta-type
+  searchInput.addEventListener("input", renderResults);
+
+  // Arrow keys sa resulta
+  searchInput.addEventListener("keydown", (event) => {
+    if (!found.length) return;
+    if (event.key === "ArrowDown") { event.preventDefault(); setActive((activeIdx + 1) % found.length); }
+    if (event.key === "ArrowUp")   { event.preventDefault(); setActive((activeIdx - 1 + found.length) % found.length); }
+  });
+
+  // SEARCH SUBMIT (Enter / Search button): bubuksan ang produkto
+  searchBar.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!searchInput.value.trim()) {
+      showToast("Please enter something to search.");
+      searchInput.focus();
+      return;
+    }
+    if (!found.length) { showToast("No products found."); return; }
+    location.href = found[activeIdx >= 0 ? activeIdx : 0].page;
+  });
+
+  // OPEN CART
+  function openCart() {
+    cartDrawer.classList.add("open");
+    cartDrawer.setAttribute("aria-hidden", "false");
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+  }
+
+  // CLOSE CART
+  function closeCart() {
+    cartDrawer.classList.remove("open");
+    cartDrawer.setAttribute("aria-hidden", "true");
+    overlay.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  on("cartBtn", "click", openCart);
+  on("cartClose", "click", closeCart);
+  if (overlay) overlay.addEventListener("click", closeCart);
+
+  // CONTINUE BROWSING
+  on("continueShopping", "click", () => {
+    closeCart();
+
+    $("shop").scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  });
+
+  // Gamitin ang naka-save na theme
+  document.documentElement.dataset.theme = getSavedTheme();
+
+  // SMOOTH NAVIGATION
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const selector = link.getAttribute("href");
+      const target = document.querySelector(selector);
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+  });
+
+  // ESCAPE KEY
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+
+    closeCart();
+    closeSearch();
+
+    if (settingsMenu) settingsMenu.hidden = true;
+    if (settingsBtn) settingsBtn.setAttribute("aria-expanded", "false");
+  });
+})();
+
+  </script>
+</body>
+</html>

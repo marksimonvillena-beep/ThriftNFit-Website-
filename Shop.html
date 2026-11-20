@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shop · ThriftNFit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="shop.css">
+  <style>
+    /* Ayos para sa settings menu (Contacts + Shipping information) */
+    .settings { position: relative; }
+    .menu { z-index: 1000; }
+    .menu[hidden] { display: none !important; }
+    .menu a.menu__row {
+      display: flex;
+      box-sizing: border-box;
+      width: 100%;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="index.html" class="back-btn" aria-label="Back to homepage">←</a>
+      <a href="shop.html" class="nav__link" aria-current="page">PRODUCTS</a>
+    </nav>
+
+    <a href="index.html" class="nav__logo">ThriftNFit</a>
+
+    <div class="nav__right">
+
+      <!-- Nakatago gamit ang CSS (#searchBtn), pero kailangang nandito para hindi mag-error ang shop.js -->
+      <button class="icon-btn" id="searchBtn" aria-label="Open search" title="Search">
+        <svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="11" cy="11" r="6.5"/>
+          <path d="M16 16l4.5 4.5"/>
+        </svg>
+      </button>
+
+      <button class="icon-btn" id="cartBtn" aria-label="Cart" title="Cart">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4h3l2.4 11h11l2-8H6"/>
+          <circle cx="9" cy="19.5" r="1.4"/>
+          <circle cx="17" cy="19.5" r="1.4"/>
+        </svg>
+      </button>
+
+      <div class="settings">
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings" aria-expanded="false" title="Settings">
+          <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+          </svg>
+        </button>
+
+        <div class="menu" id="settingsMenu" hidden>
+          <a class="menu__row menu__btn" href="contacts.html">Contacts</a>
+          <a class="menu__row menu__btn" href="shipping.html">Shipping information</a>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <form class="search-bar" id="searchBar" hidden>
+    <input type="search" id="searchInput" placeholder="Search products..." aria-label="Search products" autocomplete="off">
+    <button type="submit" class="search-submit">Search</button>
+    <button type="button" class="icon-btn" id="searchClose" aria-label="Close search">✕</button>
+  </form>
+
+  <main class="shop">
+    <h1 class="sr-only">Products</h1>
+    <p class="shop__empty" id="emptyMsg" hidden>No products match your search.</p>
+    <div class="shop__grid" id="productGrid"></div>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const on = (id, type, fn) => { const el = $(id); if (el) el.addEventListener(type, fn); };
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const peso = (n) => "₱" + n.toLocaleString("en-PH");
+
+  // Put the product images in the "assets" folder (export them from Figma).
+  // If a file is missing, a drawn T-shirt placeholder is shown instead.
+  const PRODUCTS = [
+    { id: "gray-carhartt", name: "“Gray Carhartt T-Shirt”",   page: "T-shirt1.html", price: 200, img: "gray-carhartt.png",   tone: "#5a5450", ink: "#ffffff" },
+    { id: "new-york-city", name: "“New York City T-Shirt”",   page: "T-shirt2.html", price: 150, img: "new-york-city.png",   tone: "#141414", ink: "#ffffff" },
+    { id: "liberty",       name: "“Liberty Striped T-Shirt”", page: "T-shirt3.html", price: 100, img: "liberty-striped.png", tone: "#f4f1ec", ink: "#c8102e" },
+    { id: "doormats",      name: "“Doormats Only Hoodie”",    page: "Hoodie1.html",  price: 400, img: "doormats-only.png",   tone: "#141414", ink: "#d9a441" },
+    { id: "in-god",        name: "“In God We Trust Hoodie”",  page: "Hoodie2.html",  price: 400, img: "in-god-we-trust.png", tone: "#b8b8b8", ink: "#222222" },
+  ];  
+
+  const searchBar = $("searchBar");
+  const searchInput = $("searchInput");
+  const settingsBtn = $("settingsBtn");
+  const settingsMenu = $("settingsMenu");
+  const toastElement = $("toast");
+  const grid = $("productGrid");
+
+  let toastTimer;
+
+  // SAFE LOCAL STORAGE (theme only)
+  function getSavedTheme() {
+    try { return localStorage.getItem("tnf-theme") || "dark"; }
+    catch { return "dark"; }
+  }
+
+  // TOAST MESSAGE
+  function showToast(message) {
+    toastElement.textContent = message;
+    toastElement.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastElement.classList.remove("show"), 2500);
+  }
+
+  // PRODUCT IMAGES (with placeholder if the file is missing)
+  function teeSvg(p) {
+    return `<svg viewBox="0 0 200 220" role="img" aria-label="${esc(p.name)}">
+      <path d="M70 20 L20 45 L38 90 L58 80 L58 200 L142 200 L142 80 L162 90 L180 45 L130 20 Q100 45 70 20Z"
+            fill="${p.tone}" stroke="rgba(0,0,0,.25)" stroke-width="2"/>
+      <text x="100" y="110" text-anchor="middle" font-family="Playfair Display, Georgia, serif"
+            font-weight="800" font-size="14" fill="${p.ink}">ThriftNFit</text></svg>`;
+  }
+
+  // error events do not bubble, so listen in the capture phase
+  document.addEventListener("error", (event) => {
+    const img = event.target;
+    if (!(img instanceof HTMLImageElement) || !img.dataset.fallback) return;
+    const p = PRODUCTS.find((x) => x.id === img.dataset.fallback);
+    if (!p) return;
+    const tpl = document.createElement("template");
+    tpl.innerHTML = teeSvg(p).trim();
+    img.replaceWith(tpl.content.firstChild);
+  }, true);
+
+  // PRODUCT GRID
+  function renderProducts(query = "") {
+    const q = query.trim().toLowerCase();
+    const list = PRODUCTS.filter((p) => p.name.toLowerCase().includes(q));
+
+    grid.innerHTML = list.map((p) => `
+      <a class="product" href="${p.page || "product.html?id=" + encodeURIComponent(p.id)}" style="text-decoration:none;cursor:pointer">
+        <div class="product__img">
+          <img src="assets/${p.img}" alt="${esc(p.name)}" data-fallback="${p.id}">
+        </div>
+        <h2 class="product__name">${esc(p.name)}</h2>
+        <p class="product__price">${peso(p.price)}</p>
+      </a>`).join("");
+
+    $("emptyMsg").hidden = list.length > 0;
+  }
+
+  // SEARCH
+  on("searchBtn", "click", () => {
+    const opening = searchBar.hidden;
+    searchBar.hidden = !opening;
+    if (opening) {
+      searchInput.focus();
+    } else {
+      searchInput.value = "";
+      renderProducts();
+    }
+  });
+
+  searchInput.addEventListener("input", () => renderProducts(searchInput.value));
+
+  searchBar.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!searchInput.value.trim()) {
+      showToast("Please enter something to search.");
+      searchInput.focus();
+    }
+  });
+
+  on("searchClose", "click", () => {
+    searchBar.hidden = true;
+    searchInput.value = "";
+    renderProducts();
+  });
+
+  // CART (not working yet)
+  on("cartBtn", "click", () => showToast("Cart is coming soon!"));
+
+  // SETTINGS MENU (Contacts + Shipping information)
+  settingsBtn.addEventListener("click", (event) => {
+    event.stopPropagation();
+    const opening = settingsMenu.hidden;
+    settingsMenu.hidden = !opening;
+    settingsBtn.setAttribute("aria-expanded", String(opening));
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
+      settingsMenu.hidden = true;
+      settingsBtn.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Gamitin ang naka-save na theme (galing sa front page)
+  document.documentElement.dataset.theme = getSavedTheme();
+
+  // ESCAPE KEY
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    searchBar.hidden = true;
+    searchInput.value = "";
+    renderProducts();
+    settingsMenu.hidden = true;
+    settingsBtn.setAttribute("aria-expanded", "false");
+  });
+
+  renderProducts();
+})();
+
+  </script>
+</body>
+</html>

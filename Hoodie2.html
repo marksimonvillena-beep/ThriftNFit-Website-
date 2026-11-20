@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>In God We Trust Hoodie · ThriftNFit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Oswald:wght@300;400&family=Playfair+Display:wght@600;800;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    /* Settings menu (Contacts + Shipping information) */
+    .settings { position: relative; }
+    .menu { z-index: 1000; }
+    .menu[hidden] { display: none !important; }
+    .menu a.menu__row {
+      display: flex;
+      box-sizing: border-box;
+      width: 100%;
+      text-decoration: none;
+    }
+
+    /* Back arrow */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      color: var(--cream);
+      font-size: 40px;
+      line-height: 1;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.7; }
+
+    /* Cart badge */
+    .cart-badge {
+      position: absolute;
+      top: -4px;
+      right: -8px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--panel);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    /* PAGE */
+    .product-page {
+      min-height: 100vh;
+      padding: clamp(150px, 24vh, 240px) clamp(20px, 6vw, 90px) 80px;
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 35%,
+        var(--bg-glow) 0%,
+        var(--bg) 55%,
+        var(--bg-edge) 100%
+      );
+      font-family: "Playfair Display", Georgia, serif;
+    }
+
+    .product-wrap {
+      display: grid;
+      grid-template-columns: minmax(0, 493px) minmax(0, 520px);
+      gap: clamp(32px, 8vw, 120px);
+      justify-content: center;
+      align-items: start;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product-photo {
+      display: grid;
+      place-items: center;
+      aspect-ratio: 493 / 453;
+      background: #fff;
+      overflow: hidden;
+    }
+    .product-photo img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .product-info { color: #fff; }
+
+    .brand {
+      font-size: 13px;
+      font-weight: 900;
+      color: #fff;
+    }
+
+    .product-title {
+      margin: 8px 0 6px;
+      font-family: "Oswald", "Arial Narrow", sans-serif;
+      font-size: clamp(26px, 3vw, 36px);
+      font-weight: 300;
+      line-height: 1.15;
+      text-transform: uppercase;
+      color: #fff;
+    }
+
+    .product-price {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .label {
+      display: block;
+      margin: 38px 0 12px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+    }
+    .label--size { font-family: "Oswald", "Arial Narrow", sans-serif; font-weight: 400; letter-spacing: 0.02em; }
+
+    .sizes { display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .chip {
+      min-width: 62px;
+      height: 36px;
+      padding: 0 14px;
+      border: 2px solid transparent;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, transform 0.15s;
+    }
+    .chip:hover { transform: translateY(-1px); }
+    .chip[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--cream);
+    }
+
+    .qty-row { display: flex; align-items: center; gap: 16px; margin-top: 38px; }
+    .qty-row .label { margin: 0; }
+
+    .stepper {
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      overflow: hidden;
+    }
+    .stepper button {
+      width: 34px;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #000;
+      font-family: inherit;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+    .stepper button:hover { background: rgba(0, 0, 0, 0.08); }
+    .stepper button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .stepper output {
+      min-width: 34px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 28px; margin-top: 44px; }
+
+    .btn {
+      min-width: 82px;
+      height: 36px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 6px;
+      background: #fff;
+      color: #000;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 900;
+      text-transform: uppercase;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s, background 0.15s;
+    }
+    .btn:hover { transform: translateY(-2px); background: var(--cream); }
+
+    /* CART DRAWER CONTENT */
+    .cart-list { list-style: none; text-align: left; }
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 4px 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+    .cart-item strong { color: var(--cream); font-family: "Playfair Display", Georgia, serif; }
+    .cart-item small { opacity: 0.75; }
+    .cart-remove {
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      opacity: 0.7;
+    }
+    .cart-remove:hover { opacity: 1; }
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      margin: 18px 0 22px;
+      color: var(--cream);
+      font-weight: 600;
+    }
+    .drawer__content--items { text-align: left; }
+
+    @media (max-width: 860px) {
+      .product-wrap { grid-template-columns: minmax(0, 1fr); }
+      .actions { gap: 14px; }
+    }
+  </style>
+</head>
+<body id="top">
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="shop.html" class="back-btn" aria-label="Back to shop">←</a>
+      <a href="shop.html" class="nav__link">SHOP</a>
+    </nav>
+
+    <a href="index.html" class="nav__logo">ThriftNFit</a>
+
+    <div class="nav__right">
+      <button class="icon-btn" id="cartBtn" aria-label="Open cart" title="Cart">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4h3l2.4 11h11l2-8H6"/>
+          <circle cx="9" cy="19.5" r="1.4"/>
+          <circle cx="17" cy="19.5" r="1.4"/>
+        </svg>
+        <span class="cart-badge" id="cartBadge" hidden>0</span>
+      </button>
+
+      <div class="settings">
+        <button class="icon-btn" id="settingsBtn" aria-label="Settings" aria-expanded="false" title="Settings">
+          <svg viewBox="0 0 24 24" width="23" height="23" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>
+          </svg>
+        </button>
+
+        <div class="menu" id="settingsMenu" hidden>
+          <a class="menu__row menu__btn" href="contacts.html">Contacts</a>
+          <a class="menu__row menu__btn" href="shipping.html">Shipping information</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="product-page">
+    <div class="product-wrap">
+
+      <div class="product-photo">
+        <img id="productImg" src="assets/in-god-we-trust.png" alt="In God We Trust Hoodie">
+      </div>
+
+      <section class="product-info">
+        <div class="brand">ThriftNFit</div>
+        <h1 class="product-title" id="productTitle">“IN GOD WE TRUST HOODIE”</h1>
+
+        <span class="label label--size" id="sizeLabel">SIZE</span>
+        <div class="sizes" id="sizes" role="group" aria-labelledby="sizeLabel">
+          <button type="button" class="chip" aria-pressed="false">S</button>
+          <button type="button" class="chip" aria-pressed="false">M</button>
+          <button type="button" class="chip" aria-pressed="false">L</button>
+          <button type="button" class="chip" aria-pressed="false">XL</button>
+          <button type="button" class="chip" aria-pressed="false">2XL</button>
+        </div>
+
+        <div class="qty-row">
+          <span class="label" id="qtyLabel">Quantity</span>
+          <div class="stepper" role="group" aria-labelledby="qtyLabel">
+            <button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button>
+            <output id="qtyValue" aria-live="polite">1</output>
+            <button type="button" id="qtyPlus" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+
+        <div class="actions">
+          <a href="shop.html" class="btn" id="cancelBtn">Cancel</a>
+          <button type="button" class="btn" id="checkoutBtn">Check out</button>
+          <button type="button" class="btn" id="addBtn">Add to cart</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <div class="overlay" id="overlay" hidden></div>
+
+  <aside class="drawer" id="cartDrawer" aria-label="Shopping cart" aria-hidden="true">
+    <div class="drawer__head">
+      <h2>Your Cart</h2>
+      <button class="icon-btn" id="cartClose" aria-label="Close cart">✕</button>
+    </div>
+    <div class="drawer__content drawer__content--items" id="cartContent"></div>
+  </aside>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+  (() => {
+    const $ = (id) => document.getElementById(id);
+    const peso = (n) => "₱" + n.toLocaleString("en-PH");
+    const MAX_QTY = 10;
+    const CART_KEY = "tnf-cart";
+
+    // Same products as the shop page. Images are in the "assets" folder.
+    const PRODUCTS = {
+      "gray-carhartt": { name: "Gray T-Shirt Carhartt",  price: 200, img: "gray-carhartt.png" },
+      "new-york-city": { name: "New York City T-Shirt",  price: 150, img: "new-york-city.png" },
+      "liberty":       { name: "Liberty Striped T-Shirt", price: 100, img: "liberty-striped.png" },
+      "doormats":      { name: "Doormats Only Hoodie",   price: 400, img: "doormats-only.png" },
+      "in-god":        { name: "In God We Trust Hoodie", price: 400, img: "in-god-we-trust.png" },
+    };
+
+    const params = new URLSearchParams(location.search);
+    const id = "in-god"; // Hoodie 2
+    const product = PRODUCTS[id];
+
+    let size = null;
+    let qty = 1;
+    let toastTimer;
+
+    // ---------- toast ----------
+    function showToast(message) {
+      const t = $("toast");
+      t.textContent = message;
+      t.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove("show"), 2500);
+    }
+
+    // ---------- cart storage (safe) ----------
+    function loadCart() {
+      try { return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
+      catch { return []; }
+    }
+    let memoryCart = loadCart();
+    function saveCart() {
+      try { localStorage.setItem(CART_KEY, JSON.stringify(memoryCart)); }
+      catch { /* cart still works until the page is closed */ }
+    }
+
+    function cartCount() {
+      return memoryCart.reduce((sum, item) => sum + item.qty, 0);
+    }
+
+    function renderBadge() {
+      const count = cartCount();
+      $("cartBadge").textContent = count;
+      $("cartBadge").hidden = count === 0;
+    }
+
+    function renderCart() {
+      const box = $("cartContent");
+      if (memoryCart.length === 0) {
+        box.innerHTML = `
+          <div style="text-align:center">
+            <p class="empty-cart-icon">🛍</p>
+            <h3>Your cart is empty</h3>
+            <p class="drawer__note">Pick a size and press Add to cart.</p>
+          </div>`;
+        return;
+      }
+      const total = memoryCart.reduce((s, i) => s + PRODUCTS[i.id].price * i.qty, 0);
+      box.innerHTML = `
+        <ul class="cart-list">
+          ${memoryCart.map((i, idx) => `
+            <li class="cart-item">
+              <strong>${PRODUCTS[i.id].name}</strong>
+              <span>${peso(PRODUCTS[i.id].price * i.qty)}</span>
+              <small>Size ${i.size} · Qty ${i.qty}</small>
+              <button class="cart-remove" data-remove="${idx}" aria-label="Remove item">Remove</button>
+            </li>`).join("")}
+        </ul>
+        <div class="cart-total"><span>Total</span><span>${peso(total)}</span></div>
+        <a class="btn" href="shipping.html" style="width:100%">Check out</a>`;
+    }
+
+    function openCart() {
+      renderCart();
+      $("cartDrawer").classList.add("open");
+      $("cartDrawer").setAttribute("aria-hidden", "false");
+      $("overlay").hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+    function closeCart() {
+      $("cartDrawer").classList.remove("open");
+      $("cartDrawer").setAttribute("aria-hidden", "true");
+      $("overlay").hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function addToCart() {
+      if (!size) {
+        showToast("Please select a size first.");
+        return false;
+      }
+      const existing = memoryCart.find((i) => i.id === id && i.size === size);
+      if (existing) existing.qty = Math.min(MAX_QTY, existing.qty + qty);
+      else memoryCart.push({ id, size, qty });
+      saveCart();
+      renderBadge();
+      showToast(`Added ${qty} × ${product.name} (${size}) to cart`);
+      return true;
+    }
+
+    // ---------- product ----------
+    document.title = product.name + " · ThriftNFit";
+    $("productTitle").textContent = "“" + product.name + "”";
+    const img = $("productImg");
+    img.alt = product.name;
+    img.onerror = () => { img.style.visibility = "hidden"; };
+    img.src = "assets/" + product.img;
+
+    // sizes
+    document.querySelectorAll("#sizes .chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        size = chip.textContent.trim();
+        document.querySelectorAll("#sizes .chip").forEach((c) =>
+          c.setAttribute("aria-pressed", String(c === chip)));
+      });
+    });
+
+    // quantity
+    function renderQty() {
+      $("qtyValue").textContent = qty;
+      $("qtyMinus").disabled = qty <= 1;
+      $("qtyPlus").disabled = qty >= MAX_QTY;
+    }
+    $("qtyMinus").addEventListener("click", () => { if (qty > 1) { qty--; renderQty(); } });
+    $("qtyPlus").addEventListener("click", () => {
+      if (qty < MAX_QTY) { qty++; renderQty(); }
+      else showToast("Maximum of " + MAX_QTY + " per order.");
+    });
+    renderQty();
+
+    $("checkoutBtn").addEventListener("click", () => {
+  if (!size) {
+    showToast("Please select a size first.");
+    return;
+  }
+  try { localStorage.setItem("tnf-buynow", JSON.stringify({ id, size, qty })); }
+  catch { /* ignore */ }
+  location.href = "checkout.html";
+});
+
+    // cart drawer
+    $("cartBtn").addEventListener("click", openCart);
+    $("cartClose").addEventListener("click", closeCart);
+    $("overlay").addEventListener("click", closeCart);
+    $("cartContent").addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-remove]");
+      if (!btn) return;
+      memoryCart.splice(Number(btn.dataset.remove), 1);
+      saveCart();
+      renderBadge();
+      renderCart();
+    });
+    renderBadge();
+
+    // settings menu (Contacts + Shipping information)
+    const settingsBtn = $("settingsBtn");
+    const settingsMenu = $("settingsMenu");
+    settingsBtn.addEventListener("click", (event) => {
+      event.stopPropagation();
+      const opening = settingsMenu.hidden;
+      settingsMenu.hidden = !opening;
+      settingsBtn.setAttribute("aria-expanded", String(opening));
+    });
+    document.addEventListener("click", (event) => {
+      if (!settingsMenu.contains(event.target) && !settingsBtn.contains(event.target)) {
+        settingsMenu.hidden = true;
+        settingsBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      closeCart();
+      settingsMenu.hidden = true;
+      settingsBtn.setAttribute("aria-expanded", "false");
+    });
+  })();
+  </script>
+</body>
+</html>

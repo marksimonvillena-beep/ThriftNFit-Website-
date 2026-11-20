@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shipping information · ThriftNFit</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Playfair+Display:wght@600;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Lahat ng style ng page na ito ay nandito na, hindi na kailangan ng ibang CSS file -->
+  <style>
+    body, .nav, .nav__link,
+    button, input, select, textarea {
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(
+        ellipse 80% 60% at 50% 35%,
+        var(--bg-glow, #6b4c35) 0%,
+        var(--bg, #3f2d20) 55%,
+        var(--bg-edge, #2f2218) 100%
+      ) fixed;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cream, #f5f0e8);
+      font-size: 40px;
+      line-height: 1;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 0.7; }
+
+    /* Kapag may logo image na, alisin ang kahon at text */
+    .nav__logo.has-img { padding: 0; background: none; }
+    .nav__logo #logoImg { display: block; height: 48px; width: auto; }
+
+    .ship-page {
+      display: flex;
+      justify-content: center;
+      padding: clamp(120px, 17vh, 170px) 20px 60px;
+    }
+
+    /* ---------- CARD (may border, nasa loob ang mga fill up) ---------- */
+    .ship-card {
+      width: 100%;
+      max-width: 380px;
+      padding: 20px 20px 22px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e1e1e;
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    .ship-title { font-size: 22px; font-weight: 600; line-height: 1.2; }
+    .ship-note  { margin-top: 4px; font-size: 13px; font-weight: 600; color: #757575; }
+
+    .ship-section {
+      margin: 22px 0 12px;
+      padding-top: 16px;
+      border-top: 1px solid #e6e6e6;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #444;
+    }
+    .ship-section:first-of-type { margin-top: 18px; }
+
+    .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .field label { font-size: 14px; font-weight: 600; }
+    .field .opt { font-weight: 600; color: #8a8a8a; }
+
+    .field input,
+    .field select,
+    .field textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      background: #fff;
+      color: #1e1e1e;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .field input::placeholder,
+    .field textarea::placeholder { color: #b3b3b3; font-weight: 600; }
+    .field textarea { min-height: 76px; resize: vertical; }
+
+    .field select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding-right: 38px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none' stroke='%231e1e1e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      cursor: pointer;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus,
+    .input-group:focus-within { outline: 2px solid #2c2c2c; outline-offset: 1px; }
+
+    .input-group {
+      display: flex;
+      border: 1px solid #d9d9d9;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .input-group .dial {
+      display: inline-flex;
+      align-items: center;
+      padding: 0 12px;
+      background: #f3f3f3;
+      border-right: 1px solid #d9d9d9;
+      font-size: 14px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .field .input-group input { border: 0; border-radius: 0; flex: 1; min-width: 0; }
+    .field .input-group input:focus { outline: none; }
+
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .field .err { min-height: 0; font-size: 12px; font-weight: 600; color: #b3261e; }
+    .field.has-error input,
+    .field.has-error select,
+    .field.has-error textarea,
+    .field.has-error .input-group { border-color: #b3261e; }
+
+    .terms { display: flex; align-items: flex-start; gap: 10px; margin: 4px 0 6px; font-size: 14px; font-weight: 600; }
+    .terms input { width: 16px; height: 16px; margin-top: 3px; accent-color: #2c2c2c; flex: none; }
+    .terms .link {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: none;
+      font: inherit;
+      font-weight: 600;
+      color: #757575;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .terms-err { margin: 0 0 8px 26px; font-size: 12px; font-weight: 600; color: #b3261e; }
+
+    .save-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid #2c2c2c;
+      border-radius: 8px;
+      background: #2c2c2c;
+      color: #f5f5f5;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .save-btn:hover { opacity: 0.85; }
+
+    .saved-msg { margin-top: 12px; font-size: 14px; font-weight: 600; text-align: center; color: #2e7d32; }
+
+    /* Terms popup */
+    .terms-dialog {
+      max-width: 420px;
+      padding: 22px;
+      border: 0;
+      border-radius: 10px;
+      font-family: "Poppins", system-ui, sans-serif;
+      color: #1e1e1e;
+    }
+    .terms-dialog::backdrop { background: rgba(0, 0, 0, 0.55); }
+    .terms-dialog h2 { font-size: 20px; margin-bottom: 10px; }
+    .terms-dialog p  { font-size: 14px; line-height: 1.5; margin-bottom: 8px; }
+    .terms-dialog button {
+      margin-top: 8px;
+      padding: 10px 18px;
+      border: 0;
+      border-radius: 8px;
+      background: #2c2c2c;
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <nav class="nav__left" aria-label="Main navigation">
+      <a href="shop.html" class="back-btn" id="backBtn" aria-label="Back">←</a>
+    </nav>
+
+    <!-- Logo: ilagay ang exported logo sa assets/logo.png. Kung wala pa, text muna ang lalabas. -->
+    <a href="index.html" class="nav__logo" id="logoLink" aria-label="ThriftNFit">
+      <img id="logoImg" src="assets/logo.png" alt="ThriftNFit" height="48" hidden>
+      <span id="logoText">ThriftNFit</span>
+    </a>
+
+    <div class="nav__right"></div>
+  </header>
+
+  <main class="ship-page">
+    <form class="ship-card" id="shippingForm" novalidate>
+      <h1 class="ship-title">Shipping information</h1>
+      <p class="ship-note">We ship within 2 working days · we deliver worldwide</p>
+
+      <h2 class="ship-section">Personal information</h2>
+
+      <div class="field" id="f-fullName">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" placeholder="Enter your Full Name" autocomplete="name">
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-email">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" placeholder="Example@gmail.com" autocomplete="email">
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-phone">
+        <label for="phone">Phone Number</label>
+        <div class="input-group">
+          <span class="dial" id="dial">+63</span>
+          <input type="tel" id="phone" placeholder="9XX XXX XXXX" inputmode="tel" autocomplete="tel-national">
+        </div>
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <h2 class="ship-section">Delivery address</h2>
+
+      <div class="field" id="f-country">
+        <label for="country">Country</label>
+        <select id="country" autocomplete="country-name"></select>
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-street">
+        <label for="street">Delivery Address:</label>
+        <textarea id="street" placeholder="House number, street name, apartment, etc." autocomplete="street-address"></textarea>
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="field" id="f-state">
+        <label for="state" id="stateLabel">Province</label>
+        <input type="text" id="state" placeholder="Enter your province" autocomplete="address-level1">
+        <span class="err" aria-live="polite"></span>
+      </div>
+
+      <div class="row">
+        <div class="field" id="f-city">
+          <label for="city">City</label>
+          <input type="text" id="city" placeholder="Enter your city" autocomplete="address-level2">
+          <span class="err" aria-live="polite"></span>
+        </div>
+        <div class="field" id="f-postal">
+          <label for="postal" id="postalLabel">Postal code</label>
+          <input type="text" id="postal" placeholder="e.g. 1000" autocomplete="postal-code">
+          <span class="err" aria-live="polite"></span>
+        </div>
+      </div>
+
+      <label class="terms">
+        <input type="checkbox" id="terms">
+        <span>I accept the terms
+          <button type="button" class="link" id="termsLink">Read our T&amp;Cs</button>
+        </span>
+      </label>
+      <p class="terms-err" id="termsErr" hidden>Please accept the terms to continue.</p>
+
+      <button type="submit" class="save-btn">Save shipping information</button>
+      <p class="saved-msg" id="savedMsg" hidden>Shipping information saved!</p>
+    </form>
+  </main>
+
+  <dialog class="terms-dialog" id="termsDialog">
+    <h2>Terms</h2>
+    <p>We ship within 2 working days after your order is placed.</p>
+    <p>For orders outside the Philippines, delivery time and shipping fees depend on the country. Customs duties or import taxes, if any, are paid by the buyer.</p>
+    <p>The details you enter here are used only to deliver your order.</p>
+    <button type="button" id="termsClose">Close</button>
+  </dialog>
+
+  <script>
+  (function () {
+    var KEY = "tnf-shipping";
+    var $ = function (id) { return document.getElementById(id); };
+
+    // Logo image
+    (function () {
+      var img = $("logoImg");
+      function show() {
+        img.hidden = false;
+        $("logoText").hidden = true;
+        $("logoLink").classList.add("has-img");
+      }
+      if (img.complete && img.naturalWidth > 0) show();
+      else img.addEventListener("load", show);
+    })();
+
+    // [name, dial code, postal pattern (null = walang postal code), postal label, state label, postal example, state required]
+    var COUNTRIES = [
+      ["Australia", "+61", /^\d{4}$/, "Postcode", "State", "2000", true],
+      ["Brazil", "+55", /^\d{5}-?\d{3}$/, "Postal code (CEP)", "State", "01310-100", true],
+      ["Canada", "+1", /^[A-Za-z]\d[A-Za-z][ -]?\d[A-Za-z]\d$/, "Postal code", "Province", "K1A 0B1", true],
+      ["China", "+86", /^\d{6}$/, "Postal code", "Province", "100000", true],
+      ["France", "+33", /^\d{5}$/, "Postal code", "Region", "75001", false],
+      ["Germany", "+49", /^\d{5}$/, "Postal code", "State", "10115", false],
+      ["Hong Kong", "+852", null, "Postal code", "District", "", false],
+      ["India", "+91", /^\d{6}$/, "PIN code", "State", "110001", true],
+      ["Indonesia", "+62", /^\d{5}$/, "Postal code", "Province", "10110", true],
+      ["Ireland", "+353", /^[A-Za-z]\d{2}\s?[A-Za-z\d]{4}$/, "Eircode", "County", "D02 X285", true],
+      ["Italy", "+39", /^\d{5}$/, "Postal code", "Province", "00100", true],
+      ["Japan", "+81", /^\d{3}-?\d{4}$/, "Postal code", "Prefecture", "100-0001", true],
+      ["Kuwait", "+965", /^\d{5}$/, "Postal code", "Governorate", "13001", false],
+      ["Malaysia", "+60", /^\d{5}$/, "Postcode", "State", "50000", true],
+      ["Mexico", "+52", /^\d{5}$/, "Postal code", "State", "06000", true],
+      ["Netherlands", "+31", /^\d{4}\s?[A-Za-z]{2}$/, "Postal code", "Province", "1011 AB", false],
+      ["New Zealand", "+64", /^\d{4}$/, "Postcode", "Region", "6011", false],
+      ["Norway", "+47", /^\d{4}$/, "Postal code", "County", "0150", false],
+      ["Philippines", "+63", /^\d{4}$/, "Postal code", "Province", "1000", true],
+      ["Qatar", "+974", null, "Postal code", "Municipality", "", false],
+      ["Saudi Arabia", "+966", /^\d{5}$/, "Postal code", "Region", "11564", true],
+      ["Singapore", "+65", /^\d{6}$/, "Postal code", "State / Region", "018956", false],
+      ["South Korea", "+82", /^\d{5}$/, "Postal code", "Province", "04524", true],
+      ["Spain", "+34", /^\d{5}$/, "Postal code", "Province", "28001", true],
+      ["Sweden", "+46", /^\d{3}\s?\d{2}$/, "Postal code", "County", "111 22", false],
+      ["Switzerland", "+41", /^\d{4}$/, "Postal code", "Canton", "8001", false],
+      ["Taiwan", "+886", /^\d{3}(\d{2,3})?$/, "Postal code", "City / County", "100", true],
+      ["Thailand", "+66", /^\d{5}$/, "Postal code", "Province", "10110", true],
+      ["United Arab Emirates", "+971", null, "Postal code", "Emirate", "", true],
+      ["United Kingdom", "+44", /^[A-Za-z]{1,2}\d[A-Za-z\d]?\s?\d[A-Za-z]{2}$/, "Postcode", "County", "SW1A 1AA", false],
+      ["United States", "+1", /^\d{5}(-\d{4})?$/, "ZIP code", "State", "90210", true],
+      ["Vietnam", "+84", /^\d{5,6}$/, "Postal code", "Province / City", "700000", true],
+      ["Other country", "+", /^[A-Za-z0-9][A-Za-z0-9 \-]{1,10}$/, "Postal / ZIP code", "State / Province / Region", "", false]
+    ];
+
+    var country = $("country");
+    COUNTRIES.forEach(function (c, i) {
+      var o = document.createElement("option");
+      o.value = c[0];
+      o.textContent = c[0];
+      country.appendChild(o);
+    });
+    country.value = "Philippines";
+
+    function info() {
+      for (var i = 0; i < COUNTRIES.length; i++) if (COUNTRIES[i][0] === country.value) return COUNTRIES[i];
+      return COUNTRIES[0];
+    }
+
+    // Kapag nagpalit ng bansa, nagbabago ang code ng phone, ang label ng province/state at ang postal code
+    function applyCountry() {
+      var c = info();
+      $("dial").textContent = c[1];
+      $("stateLabel").innerHTML = c[4] + (c[6] ? "" : ' <span class="opt">(optional)</span>');
+      $("state").placeholder = "Enter your " + c[4].toLowerCase();
+      $("postalLabel").innerHTML = c[2] ? c[3] : c[3] + ' <span class="opt">(optional)</span>';
+      $("postal").placeholder = c[5] ? "e.g. " + c[5] : (c[2] ? "Postal code" : "Not needed");
+      clearError("postal"); clearError("state"); clearError("phone");
+    }
+    country.addEventListener("change", applyCountry);
+
+    // ---------- errors ----------
+    function setError(id, text) {
+      var box = $("f-" + id);
+      box.classList.add("has-error");
+      box.querySelector(".err").textContent = text;
+    }
+    function clearError(id) {
+      var box = $("f-" + id);
+      box.classList.remove("has-error");
+      box.querySelector(".err").textContent = "";
+    }
+    ["fullName", "email", "phone", "street", "state", "city", "postal"].forEach(function (id) {
+      $(id).addEventListener("input", function () { clearError(id); });
+    });
+    $("terms").addEventListener("change", function () { $("termsErr").hidden = true; });
+
+    // ---------- prefill ----------
+    var params = new URLSearchParams(location.search);
+    var fromCheckout = params.get("from") === "checkout";
+    $("backBtn").setAttribute("href", fromCheckout ? "checkout.html" : "shop.html");
+
+    try {
+      var saved = JSON.parse(localStorage.getItem(KEY));
+      if (saved) {
+        if (saved.country) country.value = saved.country;
+        applyCountry();
+        $("fullName").value = saved.fullName || "";
+        $("email").value = saved.email || "";
+        $("phone").value = saved.phoneLocal || "";
+        $("street").value = saved.street || "";
+        $("state").value = saved.state || "";
+        $("city").value = saved.city || "";
+        $("postal").value = saved.postal || "";
+      } else { applyCountry(); }
+    } catch (e) { applyCountry(); }
+
+    // ---------- terms popup ----------
+    var dlg = $("termsDialog");
+    $("termsLink").addEventListener("click", function (e) {
+      e.preventDefault();
+      if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    });
+    $("termsClose").addEventListener("click", function () { dlg.close ? dlg.close() : dlg.removeAttribute("open"); });
+
+    // ---------- may order bang naghihintay? ----------
+    function hasPendingOrder() {
+      try {
+        var bn = JSON.parse(localStorage.getItem("tnf-buynow"));
+        if (bn && bn.id && bn.qty > 0) return true;
+        var cart = JSON.parse(localStorage.getItem("tnf-cart"));
+        return Array.isArray(cart) && cart.length > 0;
+      } catch (e) { return false; }
+    }
+
+    // ---------- save ----------
+    $("shippingForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var c = info();
+      var ok = true, firstBad = null;
+      function bad(id, msg) { setError(id, msg); ok = false; if (!firstBad) firstBad = $(id); }
+
+      var fullName = $("fullName").value.trim();
+      var email = $("email").value.trim();
+      var phoneLocal = $("phone").value.replace(/[^\d]/g, "").replace(/^0+/, "");
+      var street = $("street").value.trim();
+      var state = $("state").value.trim();
+      var city = $("city").value.trim();
+      var postal = $("postal").value.trim();
+
+      if (fullName.length < 2) bad("fullName", "Please enter your full name.");
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) bad("email", "Please enter a valid email address.");
+      if (phoneLocal.length < 6 || phoneLocal.length > 13) bad("phone", "Please enter a valid phone number.");
+      if (street.length < 5) bad("street", "Please enter your street address.");
+      if (c[6] && !state) bad("state", "Please enter your " + c[4].toLowerCase() + ".");
+      if (!city) bad("city", "Please enter your city.");
+      if (c[2]) {
+        if (!postal) bad("postal", "Please enter your " + c[3].toLowerCase() + ".");
+        else if (!c[2].test(postal)) bad("postal", "Invalid " + c[3].toLowerCase() + (c[5] ? " (e.g. " + c[5] + ")" : "") + ".");
+      }
+      if (!$("terms").checked) {
+        $("termsErr").hidden = false;
+        ok = false;
+        if (!firstBad) firstBad = $("terms");
+      }
+
+      if (!ok) { if (firstBad && firstBad.focus) firstBad.focus(); return; }
+
+      var data = {
+        fullName: fullName,
+        email: email,
+        phone: c[1] + " " + phoneLocal,
+        phoneLocal: phoneLocal,
+        country: c[0],
+        street: street,
+        state: state,
+        city: city,
+        postal: postal,
+        // buong address na gagamitin ng checkout page
+        address: street + ", " + city + (state ? ", " + state : "") + (postal ? " " + postal : "")
+      };
+      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (err) { /* ignore */ }
+
+      // Babalik sa checkout para i-place ang order
+      if (fromCheckout || hasPendingOrder()) {
+        location.href = "checkout.html";
+      } else {
+        $("savedMsg").hidden = false;
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
